@@ -45,6 +45,8 @@ const userSchema = new Schema({
     }
 }, {timestamps: true});
 
+
+// Password Hashing hook
 userSchema.pre("save", async function (next){
     if(!this.isModified("password")) return next();
 
@@ -52,10 +54,14 @@ userSchema.pre("save", async function (next){
     next();
 })
 
+
+// Matching password
 userSchema.method.isPasswordCorrect = async function(password){
     return await bcrypt.compare(this.password, password);
 }
 
+
+// generating access token
 userSchema.method.generateAccessToken = function (){
     return jwt.sign({
         _id: this._id,
@@ -70,6 +76,8 @@ userSchema.method.generateAccessToken = function (){
 )
 }
 
+
+// generating refresh token
 userSchema.method.generateRefreshToken = function(){
     return jwt.sign({
         _id: this._id,
@@ -81,4 +89,5 @@ userSchema.method.generateRefreshToken = function(){
 )
 }
 
+// Exporting user model
 export const User = mongoose.model("User", userSchema);
